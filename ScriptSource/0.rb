@@ -60,6 +60,8 @@ c = Bitmap.new("Graphics/Pictures/screenC.png")
 # The connection between a viewport and it's elements is implicit,
 #  and is created when the viewport element is created.
 # For simplicity's sake, no "Viewport"s will be used here.
+# Note that a good few viewport elements have ".update" functions.
+# I don't think calling these is essential (they appear to be for "flash" purposes), but uncertainty may apply.
 
 # Here's the first use of a viewport element in this program.
 # A Plane is a simple example of a viewport element. It's an image that tiles infinitely.
@@ -71,12 +73,42 @@ c = Bitmap.new("Graphics/Pictures/screenC.png")
 n = Plane.new()
 n.bitmap = a
 
-# RGSS1 runs at 40 FPS. Others run at 60 FPS.
+# RGSS1, by default, runs at 40 FPS. Others run at 60 FPS.
+# That said, the graphics subsystem reserves the ability to not render frames if it feels like it.
+# You can use Graphics.frame_reset to try and force it to render a frame next time you Graphics.update
+#  (after, say, a long-CPU operation).
 # Graphics.frame_count is just that - a frame counter. It's automatically updated, but can be changed manually.
+# Graphics.frame_rate should probably be left at what it is, but you can change it, and this changes effective frame rate.
 # Graphics.freeze is in preparation for a transition.
+#
 # Graphics.transition(time, transitionFilename, vague) freezes the Ruby code while it runs, and automatically updates.
 # "time" is an integer, the amount of time in frames.
-# "vague" is just that. I'm not sure from testing what it adjusts, if anything, in MKXP.
+# "vague" is an integer, which is somewhat 'special'.
+#
+# "vague" has no effect unless you have a transition bitmap.
+# To understand "vague", you need to understand how a transition bitmap is formatted.
+#
+# Say you have a transition bitmap where the left third is black, the middle third is grey (#808080),
+#  and the right half is white.
+# This is used for the second and third transition here, so you can see how it works.
+#
+# When 'vague' is 0, as in the second transition, pixels instantly change.
+# Essentially, there's a cutoff that starts at black and goes to white,
+#  and when the cutoff is brighter than a transition pixel, the screen pixel changes.
+#
+# When 'vague' is 128, as in the third transition,
+#  you see the left panel (which starts out at the cutoff) instantly change,
+#  while the other two panels fade, with no gap between.
+# Thus, 'vague' stretches the cutoff *downwards* into a linear fade.
+# So a linear gradient with vague = 0 would just have the screen getting replaced as if it was the 90's,
+#  while adjusting vague creates a wider and wider blurred-line from one screen to the other.
+#
+# Also note that, while this isn't shown here, "vague" is a 0-255 value.
+# The "range" the fade occurs over is (Pixel - Vague) to Pixel
+# This can be seen with, say, Graphics.transition(300, "Graphics/Transitions/sweep.png", 255).
+# The second bar immediately goes to 50% faded, ending half-way through the transition.
+# The third bar does a "pure" fade, starting and ending just as the transition does.
+#
 # Graphics.transition's default arguments are (8, "", 40), which is a fast simple fade.
 # The usage of this is: you freeze the current screen, move everything to the new screen, then transition.
 stage = 0
@@ -85,7 +117,7 @@ while true
   if Graphics.frame_count >= 40
    Graphics.freeze()
    n.bitmap = b
-   Graphics.transition(10, "", 40)
+   Graphics.transition(8, "", 40)
    stage = 1
   end
  end
@@ -93,12 +125,12 @@ while true
   if Graphics.frame_count >= 80
    Graphics.freeze()
    n.bitmap = c
-   Graphics.transition(10, "", 40)
+   Graphics.transition(10, "Graphics/Transitions/sweep.png", 0)
    stage = 2
   end
  end
  if stage == 2
-  if Graphics.frame_count >= 160
+  if Graphics.frame_count >= 120
    break
   end
  end
@@ -117,7 +149,7 @@ n.dispose
 a.dispose
 b.dispose
 c.dispose
-Graphics.transition(10, "", 40)
+Graphics.transition(60, "Graphics/Transitions/sweep.png", 128)
 # Running off the end of all scripts quits the game.
 # This ends the first chapter. The next chapter directly follows the first, and thus the game won't end now.
 
