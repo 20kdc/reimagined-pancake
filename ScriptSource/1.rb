@@ -3,104 +3,229 @@
 # To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
 # You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
-# Chapter 2. Introducing the Input module.
-# The Input module is a critical part of RGSS1. The reasons for this should be obvious.
+##
+# # Foreword: Just some boilerplate
+#
+# This semi-book assumes you have some programming knowledge, preferably in Ruby.
+# Anything that one would expect from a book describing Ruby is not here - there are plenty of other sources.
+#
+# If you're wondering where the name came from...
+# "Great repository names are short and memorable. Need inspiration? How about reimagined-pancake."
+#
+# The source of information for this document is MKXP, an open source reimplementation of RGSS1.
+# Thus, this information and code cannot be claimed by Kadokawa, Enterbrain, Degica, or related companies.
+#
+# In this text, you will see sections of code, indicated as so:
+#
+#     This is a code block. It is not actually code, however. It just looks like a code block.
+#
+# In the main chapter series, all the code blocks make up one RGSS1 script per chapter.
+# These scripts could be put into a Scripts.rxdata file and run in order, and they should work.
+#
+# You may see certain terms, such as {Bitmap.new}, written in curly braces.
+#
+# These terms refer to a specific function, class, or module in the Reference.
+#
+# Also note that you may see code used within bullet points, as so:
+#
+# + `class Canary`
+#   + `Canary.new(twitter_user Fixnum) -> Canary` : This is a static function with one Fixnum parameter that returns a Canary.
+#   + `canary.tweet() -> String` : This is an instance function with no parameters that returns a String.
+#   + `canary.last_tweet = String` : This is both a getter - "last\_tweet" and a setter - "last\_tweet=" - these are abbreviated to be concise.
+#
+# These definitions are somewhat expanded links to the Reference. They are not usually complete.
+# In the case of the "interfaces" defined in chapter 1, they do not even exist, as such.
+# If they do exist, look for the class or module, then read until you reach the relevant definition.
+#
+# Definitions shown on a *class* are somewhat special.
+# If they start with the name of the class, followed by a dot, these are marked 'static' in the reference.
+# If they start with the first letter of the name of the class, in lowercase, again followed by a dot - these are not marked 'static'.
+#
+# This is because static definitions on a class are uncommon, with the exception of 'new'.
+# (And even that is still only once per class.)
+# However, they are not so uncommon for modules - thus, 'static' is omitted there.
+#
+# Definitions shown on a module are always static, all the time.
+#
+# # Chapter 1. An Outline Of The RGSS1 Graphics System.
+#
+# Classes beginning with "I" are not real classes, but 'interfaces' specified to avoid repetition.
+#
+# RGSS critical structures are Color, Tone, and Rect.
+# Color and Tone use floats, despite using 0-255 ranges.
+# As for constructors and properties, these can be described almost entirely by:
+#
+#  + class Color
+#    + `Color.new(red, green, blue, [alpha]) -> Color`
+#    + `c.set(red, green, blue, alpha) -> nil`
+#  + class Tone
+#    + `Tone.new(red, green, blue, [gray]) -> Tone`
+#    + `t.set(red, green, blue, gray) -> nil`
+#  + class Rect
+#    + `Rect.new(x, y, width, height) -> Rect`
+#    + `r.set(x, y, width, height) -> nil`
+#
+# In which the argument names given are also the name of the properties.
+#
+# In RGSS, a Bitmap is the same sort of thing as it is in GDI.
+# It's an object with graphics that can be written to and used in display.
+#
+# The following is the list of constructors for Bitmap:
+#
+#  + class Bitmap
+#     + `Bitmap.new(string) -> Bitmap` : Creates a Bitmap from a file.
+#     + `Bitmap.new(width, height) -> Bitmap` : Creates a new, blank bitmap.
+#
+# Bitmaps have quite a few functions, so I won't list them all here.
+# For that, I recommend looking at the reference.
+#
+# In particular, {Bitmap.width} and {Bitmap.height} return the bitmap's width and height.
+# And a bitmap can be copied with {Bitmap.clone}.
 
-# Firstly, I'd like to note that MKXP extends the Input module's capabilities.
-# Not to generate incompatibility, I assume, but to replace functionality previously handled using the Windows API.
-# In particular, key codes 38, 39, and 40 are the mouse buttons from left to right,
-#  and the mouse position can be read in MKXP. This is not a standard part of RGSS1, so I do not demonstrate it here.
-# Hopefully it's use should be obvious from what is explained, along with the function names:
-#  Input.mouse_x Input.mouse_y
-#  and: MOUSELEFT, MOUSEMIDDLE, MOUSERIGHT
+a = Bitmap.new("Graphics/Pictures/screenA.png")
+b = Bitmap.new("Graphics/Pictures/screenB.png")
+c = Bitmap.new("Graphics/Pictures/screenC.png")
 
-# Here, a simple "fake joystick" will be shown, with Z to move onto the next part.
+# RGSS1's graphics system is somewhat insidious - it's simple at first, and then Tilemaps and Viewports come along to ruin your lunch.
+#
+# From the top level, there is nil, also known as the primary viewport, also known as the game window.
+#
+# That can contain various "scene elements", which generally share some properties:
+#
+#  + `interface ISceneElement`
+#    + `i.z = int`
+#    + `i.visible = boolean`
+#
+# (Note: Types are specified here, as there is no equivalent in the Reference.)
+#
+# Viewports are scissoring and layering control devices.
+# Or in other words, "something you can display stuff to, with a fixed size, and with everything inside having the same Z relative to other stuff."
+#
+# The primary viewport in RGSS1 is 640x480, with rare exceptions.
+# For example, MKXP allows altering this via configuration, and RGSS2/3 allows reading and changing the screen resolution at runtime.
+#
+# Viewports may have viewport elements, which are also scene elements:
+#
+#  + `interface IViewportElement`
+#    + `i.z = Fixnum`
+#    + `i.visible = Boolean`
+#    + `i.viewport = Viewport`
+#    + `i.dispose -> nil` : Dispose the object - makes it unusable.
+#    + `i.disposed? -> Boolean` : Has this been disposed yet?
+#
+# The connection between a viewport and it's elements is entirely controlled by the viewport property.
+#
+# For simplicity's sake, no viewports will be used here.
+#
+# Here's the first use of a viewport element in this program.
 
-Graphics.freeze()
-
-# Firstly, initialize what we're going to use graphically for this.
-a = Bitmap.new("Graphics/Pictures/screenD.png")
-b = Bitmap.new("Graphics/Pictures/circle.png")
 n = Plane.new()
 n.bitmap = a
 
-# A new class that gets introduced here is the Sprite class.
-# It's pretty much as it's name suggests - a simple image display.
-# The present focus is on input here, so see the reference for more details, but in particular:
-# 1. .x/.y controls where the sprite is shown - OX/OY is the "origin" for effects like rotation
-# 2. .src_rect controls where the sprite is sampled from.
-
-ns = Sprite.new()
-ns.bitmap = b
-# Just initialize to centre here. Notice lower Z is "closer to screen".
-ns.x = 304
-ns.y = 224
-ns.src_rect = Rect.new(0, 0, 32, 32)
-
-# ...the problem is, that in this case we're overlapping a Plane. So we need to set Z accordingly.
-# Higher Z -> 'closer to screen'. (For RGSS2, Y-sort is used for equal Z, but not in RGSS1)
-n.z = 0
-ns.z = 100
-
-Graphics.transition(10, "", 40)
-Input.update()
-# Input.update() : Re-polls the input devices.
-# Input.press?(k) : Is the key down?
-# Input.trigger?(k) : Was the key released (after being pressed) between the last two input updates?
-# Input.repeat?(k) : Some keys auto-repeat if held down, has this occurred between the last two input updates?
-
-# Now, what we want is the keyboard key Z.
-# But the way RGSS works is that the major action keys are semi-configurable.
-# There's 8 "virtual keys" - ABCXYZLR - and some set of physical keys which can map to them.
-# In this case, Z (physical) maps to A (virtual) by default - this probably means "advance".
-# Pressing F1 will show the input configuration screen.
-while not Input.trigger?(Input::A)
- # Now for a demonstration of dir4 and dir8.
- # The basics are that dir4 and dir8 return one of the following, (with a restriction for dir4):
- # 0: None
- # 1: Down-Left
- # 2: Down (:DOWN)
- # 3: Down-Right
- # 4: Left (:LEFT)
- # 5 is unused for some reason
- # 6: Right (:RIGHT)
- # 7: Up-Left
- # 8: Up (:UP)
- # 9: Up-Right
- d8 = Input.dir8()
- px = 0
- py = 0
- # puts(d8.to_s + "\n")
- if d8 == 1
-  px = -1
-  py = 1
- elsif d8 == 2
-  py = 1
- elsif d8 == 3
-  px = 1
-  py = 1
- elsif d8 == 4
-  px = -1
- elsif d8 == 6
-  px = 1
- elsif d8 == 7
-  px = -1
-  py = -1
- elsif d8 == 8
-  py = -1
- elsif d8 == 9
-  px = 1
-  py = -1
+# A Plane is a simple example of a viewport element. It's an image that tiles infinitely.
+#
+# A reminder - this is not all of what Plane has available, only what will be used here.
+#
+# + `class Plane`
+#   + `Plane.new([viewport]) -> Plane` : Creates a Plane, optionally setting viewport.
+#   + `p.bitmap = Bitmap` : The bitmap.
+#
+# RGSS1, by default, runs at 40 FPS. Other RGSS versions run at 60 FPS.
+#
+# That said, the graphics subsystem reserves the ability to not render frames in case it's required.
+# You can use {Graphics.frame_reset} to try and force it to render a frame next time you {Graphics.update}
+#  (after, say, a long-CPU operation), though.
+#
+# Talking of the graphics subsystem, the next object to use is {Graphics}.
+#
+# + `module Graphics`
+#   + `Graphics.frame_count = Fixnum` : A frame counter. Automatically updated (including during transitions), but you can change it yourself.
+#   + `Graphics.frame_rate = Fixnum` : Allows changing the internal frame rate (disregarding skipped frames)
+#   + `Graphics.freeze -> nil` : Snapshots the current state as a preparation for a transition.
+#   + `Graphics.update -> nil` : Refreshes the screen. There cannot be a gap of 10 seconds or over between these calls, or the game will exit.
+#   + `Graphics.transition(time, transitionFilename, vague)` : Freezes the Ruby code while it runs, and fades from the frozen state to the {Graphics.update}d state.
+#
+# For {Graphics.transition}, more explaination is required:
+#
+# + "time" is a Fixnum, the amount of time in frames for the whole transition.
+# + "vague" is a Fixnum, which is a somewhat confusing mess.
+#
+# "vague" has no effect unless you have a transition bitmap.
+# To understand "vague", you need to understand how a transition bitmap is formatted.
+#
+# Say you have a transition bitmap where the left third is black, the middle third is grey,
+#  and the right half is white.
+# This is used for the second and third transition here, so you can see how it works.
+#
+# When 'vague' is 0, as in the second transition, pixels instantly change.
+# Essentially, there's a cutoff that starts at black and goes to white,
+#  and when the cutoff is brighter than a transition pixel, the screen pixel changes.
+#
+# When 'vague' is 128, as in the third transition,
+#  you see the left panel (which starts out at the cutoff) instantly change,
+#  while the other two panels fade, with no gap between.
+# Thus, 'vague' stretches the cutoff *downwards* into a linear fade.
+# So a linear gradient with vague = 0 would just have the screen getting replaced as if it was the 90's,
+#  while adjusting vague creates a wider and wider blurred-line from one screen to the other.
+#
+# Also note that, while this isn't shown here, "vague" is a 0-255 value.
+# The "range" the fade occurs over is (Pixel - Vague) to Pixel.
+#
+# This can be seen with, say, Graphics.transition(300, "Graphics/Transitions/sweep.png", 255).
+# The second bar immediately goes to 50% faded, ending half-way through the transition.
+# The third bar does a "pure" fade, starting and ending just as the transition does.
+#
+# Graphics.transition's default arguments are (8, "", 40), which is a fast simple fade.
+# The usage of this is: you freeze the current screen, move everything to the new screen, then transition.
+#
+# So, after a lot of waffling, we have our Bitmap - b - and our Plane - n.
+# It's now time for some actual useful code.
+#
+# Firstly, set the frame counter to 0, just in case these examples are being run in the wrong order.
+Graphics.frame_count = 0
+stage = 0
+while true
+# Secondly, check which stage we're in, and if the time is above some point, go to the next stage.
+ if stage == 0
+  if Graphics.frame_count >= 40
+   Graphics.freeze()
+   n.bitmap = b
+   Graphics.transition(8, "", 40)
+   stage = 1
+  end
+ elsif stage == 1
+  if Graphics.frame_count >= 80
+   Graphics.freeze()
+   n.bitmap = c
+   Graphics.transition(10, "Graphics/Transitions/sweep", 0)
+   stage = 2
+  end
+ elsif stage == 2
+  if Graphics.frame_count >= 120
+   break
+  end
  end
- ns.x = (320 + (px * 32)) - 16
- ns.y = (240 + (py * 32)) - 16
- Input.update()
- Graphics.update()
+# Graphics.update updates the output - Input.update updates the input.
+# As previously stated, you must call Graphics.update in a semi-timely fashion to prevent the game assuming it has crashed.
+ Graphics.update
+ Input.update
 end
-# Z has been pressed - clean up.
-Graphics.freeze()
-n.dispose()
-ns.dispose()
-a.dispose()
-b.dispose()
-Graphics.transition(10, "", 40)
+
+# We now get ready for the third transition, and get rid of all the objects created along the way.
+
+Graphics.freeze
+n.dispose
+a.dispose
+b.dispose
+c.dispose
+Graphics.transition(60, "Graphics/Transitions/sweep", 128)
+
+# This final line is for the benefit of 'menu.rb', which is the launcher used to run these examples.
+# 'menu.rb' expects a final freeze to allow it to perform a transition back to the menu.
+# In other RGSS1 programs, this final freeze would be completely irrelevant.
+
+Graphics.freeze
+
+# Running off the end of all scripts quits the game.
+# While in this case this script is actually being loaded by a launcher, if this were run standalone, it would end now.
+# 

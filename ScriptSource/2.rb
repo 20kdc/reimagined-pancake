@@ -3,97 +3,136 @@
 # To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
 # You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
-# Chapter 3. Tilemaps (Plural) - or, how I learned to stop worrying and love the tilemaps
+##
 
-# RPG Maker XP only ever uses one tilemap at a time, with one tileset at a time.
-# This is known fact. You would *assume* that this fact exists down to the graphics engine level.
-# ...It doesn't.
-# In fact, a tilemap in RGSS is like any other viewport element.
-# It is also the most variable between RGSS versions.
-# In most areas, RGSS versions are extensions. In this case, "TilemapVX" (as it's known by mkxp) replaces Tilemap entirely.
+# # Chapter 2. Introducing the Input module.
 
-# To put it simply, a Tilemap is like a Plane in most ways.
-# This makes sense, given that both scroll infinitely.
-# That said, they ignore Z (see priorities)
+# The Input module is a critical part of RGSS1. The reasons for this should be obvious.
+#
+# Firstly, I'd like to note that MKXP extends the Input module's capabilities.
+# Not to generate incompatibility, I assume, but to replace functionality previously handled using the Windows API.
+#
+# In particular, 3 mouse buttons are exposed as keys, and the mouse position can be read.
+#
+# This is not a standard part of RGSS1, so I do not demonstrate it here.
+# However, the reference has further details.
+#
+# Here, a simple "fake joystick" will be shown, with the Z keyboard key exiting.
+#
+# Firstly, initialize what we're going to use graphically for this.
 
-# Tilemap.tileset : This is a Bitmap, containing the contents of what *would* be: Graphics/Tilesets/tileset.png - set it accordingly.
-# Tilemap.autotiles[0-6] : Autotile images for AT1 through AT7. Make sure none of these are nil to prevent a crash.
-# Tilemap.map_data : This is the @data table from the Map.
-# Tilemap.flash_data : RGB444 WxHx1 table for making specific X/Y positions flash. Probably don't leave as nil.
-# Tilemap.priorities : This is the @priorities table from the relevant RPG Maker XP object.
-#                      Regarding how Z works and interacts with multiple Tilemap objects (this is all extrapolation from MKXP code):
-#                      The Z of a tilemap is completely ignored.
-#                      Priorities > 5 are considered invalid by MKXP.
-#                      Priority 0 tiles are drawn at absolute Z 0.
-#                      Other priority values are drawn on a "ZLayer", with the index Y (in tile coords) + priority.
-#                      This index is converted into aboslute Z with the formula (32 * (index + p->viewpPos.y + 1)) - oy,
-#                       I suspect this is linked to tilesize in some way.
-# Tilemap.visible : Boolean - is this visible?
-# Tilemap.ox / Tilemap.oy : Acts as with Plane.
-#  Effectively a top-left camera position. Increase OX, it goes left on-screen, so effective camera goes right.
-# Tilemap.update : I suspect that this updates flash data or something - I call it "just in case"
+a = Bitmap.new("Graphics/Pictures/screenD")
+b = Bitmap.new("Graphics/Pictures/circle")
 
-Graphics.freeze()
-a = Bitmap.new("Graphics/Tilesets/C3TS.png")
-# This is where things get tricky.
-# A quick note:
-#  load_data(filename) and save_data(filename, data) are how you're supposed to save and load data in RGSS.
-# Right now it's being used here to load all the relevant Data/ objects.
-# Priorities are loaded out of Tilesets for simplicity, but nothing else.
-ns = load_data("Data/Tilesets.rxdata")[1].priorities
+n = Plane.new()
+n.bitmap = a
 
-# Load and display 3 maps with no autotiles and with just the tileset image loaded above.
-# For a proper XP map renderer, you would do more here.
-b = Tilemap.new()
-b.tileset = a
-# Not really valid autotile images, but the alternative is a crash on some runtimes.
-b.autotiles[0] = a; b.autotiles[1] = a; b.autotiles[2] = a
-b.autotiles[3] = a; b.autotiles[4] = a; b.autotiles[5] = a
-b.autotiles[6] = a
-b.map_data = load_data("Data/Map001.rxdata").data
-b.priorities = ns
-b.flash_data = Table.new(b.map_data.xsize, b.map_data.ysize, 1)
-b.update
+# A new class that gets introduced here is the Sprite class.
+# It's pretty much as it's name suggests - a simple image display.
+# The present focus is on input here, so see the reference for more details, but in particular:
+#
+#  + `class Sprite`
+#    + `x = Fixnum`, `y = Fixnum` : controls where the sprite is shown.
+#    + `src_rect = Rect` : controls where the sprite is sampled from.
+#    + `z = Fixnum` : As this is a viewport element, it has this.
+#
+# With that given, let's see how it's used:
 
-c = Tilemap.new()
-c.tileset = a
-c.autotiles[0] = a; c.autotiles[1] = a; c.autotiles[2] = a
-c.autotiles[3] = a; c.autotiles[4] = a; c.autotiles[5] = a
-c.autotiles[6] = a
-c.map_data = load_data("Data/Map002.rxdata").data
-c.priorities = ns
-c.flash_data = Table.new(c.map_data.xsize, c.map_data.ysize, 1)
-c.update
+ns = Sprite.new()
+ns.bitmap = b
+ns.x = 304 # Centre for a 32x32 pixel sprite at 640x480.
+ns.y = 224
+ns.src_rect = Rect.new(0, 0, 32, 32)
 
-n = Tilemap.new()
-n.tileset = a
-n.autotiles[0] = a; n.autotiles[1] = a; n.autotiles[2] = a
-n.autotiles[3] = a; n.autotiles[4] = a; n.autotiles[5] = a
-n.autotiles[6] = a
-n.map_data = load_data("Data/Map003.rxdata").data
-n.priorities = ns
-n.flash_data = Table.new(n.map_data.xsize, n.map_data.ysize, 1)
-n.update
+# ...the problem is, that in this case we're overlapping a Plane. So we need to set Z accordingly.
+#
+# Higher Z -> 'closer to screen'. (For RGSS2, Y-sort is used for equal Z, but not in RGSS1.)
 
-# Now the fun part is over, just setup the main render loop
-
-Graphics.transition(10, "", 40)
+n.z = 0
+ns.z = 100
 
 Input.update()
-while not Input.trigger?(Input::A)
- b.ox = Graphics.frame_count 
- c.ox = Graphics.frame_count * 4
- n.ox = Graphics.frame_count * 16
- b.update
- c.update
- n.update
- Graphics.update()
- Input.update()
-end
-Graphics.freeze()
-b.dispose()
-c.dispose()
-n.dispose()
-a.dispose()
-Graphics.transition(10, "", 40)
 
+# Here's where the new stuff begins.
+#
+# + `module Input`
+#   + `Input.update() -> nil` : Re-polls the input devices.
+#   + `Input.press?(k Fixnum) -> Boolean` : Is the key down?
+#   + `Input.trigger?(k Fixnum) -> Boolean` : Was the key pressed between the last two input updates?
+#   + `Input.repeat?(k Fixnum) -> Boolean` : Some keys auto-repeat if held down, has this occurred between the last two input updates?
+#   + `Input.dir4() -> Fixnum` : Get direction, limiting to the basic 4 directions.
+#   + `Input.dir8() -> Fixnum` : Get direction, allowing diagonals.
+#
+# The easiest way to visualize the direction numbers is a square:
+# 
+# <table><tr><td>
+# 7 </td><td> 8 </td><td> 9 </td></tr><tr><td>
+# 4 </td><td>   </td><td> 6 </td></tr><tr><td>
+# 1 </td><td> 2 </td><td> 3 </td></tr></table>
+#
+# (Apologies to those reading the raw Ruby file.)
+#
+# And the second-easiest way to remember them is most likely:
+#
+# 1234, 6789, minor 3 right, major 3 up.
+#
+# (The first-easiest way is probably protected by copyright.)
+#
+# Now, what we want is the keyboard key Z.
+# But the way RGSS works is that the major action keys are semi-configurable.
+#
+# There's 8 "virtual keys" - ABCXYZLR - and some set of physical keys which can map to them.
+# Pressing F1 will show the input configuration screen.
+#
+# In this case, Z (physical) maps to A (virtual) by default - this probably means "advance".
+#
+
+while not Input.trigger?(Input::A)
+# And now for a demonstration of dir4 and dir8.
+ d8 = Input.dir8()
+ px = 0
+ py = 0
+ if d8 == 1
+  px = -1
+  py = 1
+ elsif d8 == 2
+  py = 1
+ elsif d8 == 3
+  px = 1
+  py = 1
+ elsif d8 == 4
+  px = -1
+ elsif d8 == 6
+  px = 1
+ elsif d8 == 7
+  px = -1
+  py = -1
+ elsif d8 == 8
+  py = -1
+ elsif d8 == 9
+  px = 1
+  py = -1
+ end
+
+# Now the circle gets repositioned according to the offset worked out above.
+
+ ns.x = (320 + (px * 32)) - 16
+ ns.y = (240 + (py * 32)) - 16
+
+# And now the usual updates.
+
+ Input.update()
+ Graphics.update()
+end
+
+# At this point, Z has been pressed. Firstly:
+# This is for the sake of the menu, should it be running.
+
+Graphics.freeze()
+
+# And the rest is just good behavior.
+
+n.dispose()
+ns.dispose()
+a.dispose()
+b.dispose()
