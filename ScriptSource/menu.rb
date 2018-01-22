@@ -20,6 +20,7 @@ class PancakeMenu
    Graphics.update
    Input.update
    if Input.trigger?(Input::A)
+    Audio.se_play("Audio/SE/select")
     @window.visible = false
     Graphics.frame_count = 0
     $pancake.run(@cursor_rect_target.to_s)
@@ -30,12 +31,14 @@ class PancakeMenu
     if @cursor_rect_target < 1
      @cursor_rect_target = 1
     end
+    Audio.se_play("Audio/SE/change")
    end
    if Input.trigger?(Input::DOWN) or Input.repeat?(Input::DOWN)
     @cursor_rect_target = @cursor_rect_target + 1
     if @cursor_rect_target >= @entries.length
      @cursor_rect_target = @entries.length - 1
     end
+    Audio.se_play("Audio/SE/change")
    end
    crp_targ = @cursor_rect_target * 18
    if @window.cursor_rect.y < crp_targ
