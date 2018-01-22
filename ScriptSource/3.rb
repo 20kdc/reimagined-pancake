@@ -11,7 +11,7 @@
 # This is known fact. You would *assume* that this fact exists down to the graphics engine level.
 # ...It doesn't.
 #
-# In fact, a tilemap in RGSS is like any other viewport element.
+# In fact, a tilemap in RGSS is almost like any other viewport element.
 # It is also the most variable between RGSS versions.
 #
 # In most areas, RGSS versions are extensions. In this case, "TilemapVX" (as it's known by mkxp) replaces Tilemap entirely.
@@ -20,83 +20,85 @@
 #
 # This makes sense, given that both scroll infinitely.
 #
-# That said, Tilemaps ignore their own Z. It isn't even treated as an offset, it is just ignored.
+# That said, Tilemaps don't have a Z, but they do have a viewport.
 #
-# Tilemap.tileset : This is a Bitmap, containing the contents of what *would* be: Graphics/Tilesets/tileset.png - set it accordingly.
-# Tilemap.autotiles[0-6] : Autotile images for AT1 through AT7. Make sure none of these are nil to prevent a crash.
-# Tilemap.map_data : This is the @data table from the Map.
-# Tilemap.flash_data : RGB444 WxHx1 table for making specific X/Y positions flash. Probably don't leave as nil.
-# Tilemap.priorities : This is the @priorities table from the relevant RPG Maker XP object.
-#                      Regarding how Z works and interacts with multiple Tilemap objects (this is all extrapolation from MKXP code):
-#                      The Z of a tilemap is completely ignored.
-#                      Priorities > 5 are considered invalid by MKXP.
-#                      Priority 0 tiles are drawn at absolute Z 0.
-#                      Other priority values are drawn on a "ZLayer", with the index Y (in tile coords) + priority.
-#                      This index is converted into aboslute Z with the formula (32 * (index + p->viewpPos.y + 1)) - oy,
-#                       I suspect this is linked to tilesize in some way.
-# Tilemap.visible : Boolean - is this visible?
-# Tilemap.ox / Tilemap.oy : Acts as with Plane.
-#  Effectively a top-left camera position. Increase OX, it goes left on-screen, so effective camera goes right.
-# Tilemap.update : I suspect that this updates flash data or something - I call it "just in case"
+# + `class Tilemap`
+#   + `Tilemap.new(viewport = nil) -> Tilemap` : You know the drill.
+#   + `t.viewport = Viewport` : While this has no Z control, it can still be locked to a viewport.
+#   + `t.tileset = Bitmap` : This is a Bitmap, containing the contents of what *would* be: Graphics/Tilesets/tileset.png - set it accordingly.
+#   + `t.autotiles = [7] of Bitmap` : Not, in fact, an Array. AT1 through AT7 are at 0 through 6. Make sure none of these are nil to prevent a crash.
+#   + `t.map_data = Table[W, H, 3]` : This is the @data table from the Map.
+#   + `t.flash_data = Table[W, H, 1]` : RGB444 table for making specific X/Y positions flash. Probably don't leave as nil.
+#   + `t.priorities = Table[1632]` : This is the @priorities table from the relevant RPG Maker XP object.
+#   + `t.visible = Boolean` : The usual visibility on/off.
+#   + `t.ox = Fixnum` / `t.oy = Fixnum` : As with Plane, effectively a top-left camera position. Increase OX, map goes left - increse OY, map goes up.
+#   + `t.update() -> nil` : This probably updates flash data.
+#
+# Regarding how Z works and interacts with multiple Tilemap objects (this is all extrapolation from MKXP code):
+#
+# Priorities > 5 are considered invalid by MKXP.
+#
+# Priority 0 tiles are drawn at absolute Z 0.
+#
+# Other priority values are drawn on a "ZLayer", with the index Y (in tile coords) + priority.
+#
+# This index is converted into absolute Z with a formula I don't quite understand,
+#  but seems to result in the tile's Y position from the top of the screen?
 
-a = Bitmap.new("Graphics/Tilesets/C3TS")
-# This is where things get tricky.
-# A quick note:
-#  load_data(filename) and save_data(filename, data) are how you're supposed to save and load data in RGSS.
-# Right now it's being used here to load all the relevant Data/ objects.
-# Priorities are loaded out of Tilesets for simplicity, but nothing else.
-ns = load_data("Data/Tilesets.rxdata")[1].priorities
+ts = load_data("Data/Tilesets.rxdata")[1]
 
-# Load and display 3 maps with no autotiles and with just the tileset image loaded above.
-# For a proper XP map renderer, you would do more here.
+# Uses RPG::Cache.tileset and RPG::Cache.autotile to load the tileset into a Tilemap.
+
+def apply_tileset(tilemap, ts)
+ tilemap.tileset = RPG::Cache.tileset(ts.tileset_name)
+ ts.autotile_names.each_with_index do | str, idx |
+  tilemap.autotiles[idx] = RPG::Cache.autotile(str)
+ end
+ tilemap.priorities = ts.priorities
+end
+
+# Load and display 3 maps, with the same tileset.
+#
+# The order of creation is important, due to the way Z is handled.
+#
+# For a proper XP map renderer, you would take the map's tileset ID into consideration.
+
+a = Tilemap.new()
+apply_tileset(a, ts)
+a.map_data = load_data("Data/Map001.rxdata").data
+a.flash_data = Table.new(a.map_data.xsize, a.map_data.ysize, 1)
+a.update
+
 b = Tilemap.new()
-b.tileset = a
-# Not really valid autotile images, but the alternative is a crash on some runtimes.
-b.autotiles[0] = a; b.autotiles[1] = a; b.autotiles[2] = a
-b.autotiles[3] = a; b.autotiles[4] = a; b.autotiles[5] = a
-b.autotiles[6] = a
-b.map_data = load_data("Data/Map001.rxdata").data
-b.priorities = ns
+apply_tileset(b, ts)
+b.map_data = load_data("Data/Map002.rxdata").data
 b.flash_data = Table.new(b.map_data.xsize, b.map_data.ysize, 1)
 b.update
 
 c = Tilemap.new()
-c.tileset = a
-c.autotiles[0] = a; c.autotiles[1] = a; c.autotiles[2] = a
-c.autotiles[3] = a; c.autotiles[4] = a; c.autotiles[5] = a
-c.autotiles[6] = a
-c.map_data = load_data("Data/Map002.rxdata").data
-c.priorities = ns
+apply_tileset(c, ts)
+c.map_data = load_data("Data/Map003.rxdata").data
 c.flash_data = Table.new(c.map_data.xsize, c.map_data.ysize, 1)
 c.update
 
-n = Tilemap.new()
-n.tileset = a
-n.autotiles[0] = a; n.autotiles[1] = a; n.autotiles[2] = a
-n.autotiles[3] = a; n.autotiles[4] = a; n.autotiles[5] = a
-n.autotiles[6] = a
-n.map_data = load_data("Data/Map003.rxdata").data
-n.priorities = ns
-n.flash_data = Table.new(n.map_data.xsize, n.map_data.ysize, 1)
-n.update
+# Now the fun part is over, we just setup a main render loop that updates everything.
 
-# Now the fun part is over, just setup the main render loop
-
-Input.update()
+Input.update
 while not Input.trigger?(Input::A)
- b.ox = Graphics.frame_count 
- c.ox = Graphics.frame_count * 4
- n.ox = Graphics.frame_count * 16
+ a.ox = Graphics.frame_count 
+ b.ox = Graphics.frame_count * 4
+ c.ox = Graphics.frame_count * 16
+ a.update
  b.update
  c.update
- n.update
- Graphics.update()
- Input.update()
+ Graphics.update
+ Input.update
 end
-# This is for the sake of the menu, which may take over from here
+
+# As per usual, involved objects are disposed of, and graphics are frozen for the menu.
+
 Graphics.freeze()
-# As per usual, involved objects are disposed of.
+a.dispose()
 b.dispose()
 c.dispose()
-n.dispose()
-a.dispose()
+RPG::Cache.clear()
