@@ -58,7 +58,7 @@ Regarding animation, I don't know the exact details of how animation works at th
 
 ## TODO TODO TODO TODO, is it only 1 or 4 frames, or something more? What's the rate?
 
-## static function Tilemap.new(viewport = nil) -> Tilemap
+## static function new(viewport = nil) -> Tilemap
 
 Creates a Tilemap. Critical things to set to prevent crashes on rendering:
 
@@ -115,7 +115,7 @@ Per-tile-ID priority values.
 *Chapter 3*
 
 
-## getset t.visible = Boolean
+## getset visible = Boolean
 
 Should the Tilemap be visible?
 

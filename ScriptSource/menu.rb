@@ -9,9 +9,11 @@ class PancakeMenu
  def initialize()
   @entries = [
    "reimagined-pancake example menu - Z to select, up/down to pick.",
-   "Chapter 1. An Outline Of The RGSS1 Graphics System.",
+   "Chapter 1. An outline of the RGSS1 graphics system.",
    "Chapter 2. Introducing the Input module.",
-   "Chapter 3. Tilemaps (Plural) - or, how I learned to stop worrying and love the tilemaps"
+   "Chapter 3. Tilemaps (Plural) - or, how I learned to stop worrying and love the tilemaps.",
+   "Chapter 4. Transitions (detailed).",
+   "Chapter 5. Viewports."
   ]
   @cursor_rect_target = 1
   start_window

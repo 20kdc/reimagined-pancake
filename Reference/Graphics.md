@@ -28,7 +28,7 @@ Use after long operations, such as calculating Pi.
 
 Outputs the current graphical state to a buffer for use by {Graphics.transition}.
 
-*Chapter 1*
+*Chapter 4*
 
 
 ## function transition(duration = 8, filename = "", vague = 40) -> nil
@@ -61,7 +61,7 @@ If this still confuses you, congratulations!
 
 You're like me. For an actual example of these effects in action, see:
 
-*Chapter 1*
+*Chapter 4*
 
 
 ## function \_\_reset\_\_() -> nil

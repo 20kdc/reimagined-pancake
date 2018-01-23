@@ -4,7 +4,7 @@
 # You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 ##
-# # Chapter 3. Tilemaps (Plural) - or, how I learned to stop worrying and love the tilemaps
+# # Chapter 3. Tilemaps (Plural) - or, how I learned to stop worrying and love the tilemaps.
 
 # RPG Maker XP only ever uses one tilemap at a time, with one tileset at a time.
 #
@@ -33,6 +33,8 @@
 #   + `t.visible = Boolean` : The usual visibility on/off.
 #   + `t.ox = Fixnum` / `t.oy = Fixnum` : As with Plane, effectively a top-left camera position. Increase OX, map goes left - increse OY, map goes up.
 #   + `t.update() -> nil` : This probably updates flash data.
+#   + `t.dispose() -> nil` : Dispose the object - makes it unusable.
+#   + `t.disposed?() -> Boolean` : Has this been disposed yet?
 #
 # Regarding how Z works and interacts with multiple Tilemap objects (this is all extrapolation from MKXP code):
 #

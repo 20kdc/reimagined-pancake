@@ -47,7 +47,7 @@
 #
 # Definitions shown on a module are always static, all the time.
 #
-# # Chapter 1. An Outline Of The RGSS1 Graphics System.
+# # Chapter 1. An outline of the RGSS1 graphics system.
 #
 # Classes beginning with "I" are not real classes, but 'interfaces' specified to avoid repetition.
 #
@@ -110,8 +110,8 @@ c = Bitmap.new("Graphics/Pictures/screenC.png")
 #    + `i.z = Fixnum`
 #    + `i.visible = Boolean`
 #    + `i.viewport = Viewport`
-#    + `i.dispose -> nil` : Dispose the object - makes it unusable.
-#    + `i.disposed? -> Boolean` : Has this been disposed yet?
+#    + `i.dispose() -> nil` : Dispose the object - makes it unusable.
+#    + `i.disposed?() -> Boolean` : Has this been disposed yet?
 #
 # The connection between a viewport and it's elements is entirely controlled by the viewport property.
 #
@@ -129,6 +129,7 @@ n.bitmap = a
 # + `class Plane`
 #   + `Plane.new([viewport]) -> Plane` : Creates a Plane, optionally setting viewport.
 #   + `p.bitmap = Bitmap` : The bitmap.
+#   + `p.dispose() -> nil` : Dispose of this Plane, making it unusable/invisible/etc.
 #
 # RGSS1, by default, runs at 40 FPS. Other RGSS versions run at 60 FPS.
 #
@@ -148,32 +149,7 @@ n.bitmap = a
 # For {Graphics.transition}, more explaination is required:
 #
 # + "time" is a Fixnum, the amount of time in frames for the whole transition.
-# + "vague" is a Fixnum, which is a somewhat confusing mess.
-#
-# "vague" has no effect unless you have a transition bitmap.
-# To understand "vague", you need to understand how a transition bitmap is formatted.
-#
-# Say you have a transition bitmap where the left third is black, the middle third is grey,
-#  and the right half is white.
-# This is used for the second and third transition here, so you can see how it works.
-#
-# When 'vague' is 0, as in the second transition, pixels instantly change.
-# Essentially, there's a cutoff that starts at black and goes to white,
-#  and when the cutoff is brighter than a transition pixel, the screen pixel changes.
-#
-# When 'vague' is 128, as in the third transition,
-#  you see the left panel (which starts out at the cutoff) instantly change,
-#  while the other two panels fade, with no gap between.
-# Thus, 'vague' stretches the cutoff *downwards* into a linear fade.
-# So a linear gradient with vague = 0 would just have the screen getting replaced as if it was the 90's,
-#  while adjusting vague creates a wider and wider blurred-line from one screen to the other.
-#
-# Also note that, while this isn't shown here, "vague" is a 0-255 value.
-# The "range" the fade occurs over is (Pixel - Vague) to Pixel.
-#
-# This can be seen with, say, Graphics.transition(300, "Graphics/Transitions/sweep.png", 255).
-# The second bar immediately goes to 50% faded, ending half-way through the transition.
-# The third bar does a "pure" fade, starting and ending just as the transition does.
+# + "vague" is a Fixnum, which is a somewhat confusing mess, and is best described by "See Chapter 4."
 #
 # Graphics.transition's default arguments are (8, "", 40), which is a fast simple fade.
 # The usage of this is: you freeze the current screen, move everything to the new screen, then transition.
@@ -190,14 +166,14 @@ while true
   if Graphics.frame_count >= 40
    Graphics.freeze()
    n.bitmap = b
-   Graphics.transition(8, "", 40)
+   Graphics.transition()
    stage = 1
   end
  elsif stage == 1
   if Graphics.frame_count >= 80
    Graphics.freeze()
    n.bitmap = c
-   Graphics.transition(10, "Graphics/Transitions/sweep", 0)
+   Graphics.transition()
    stage = 2
   end
  elsif stage == 2
@@ -211,21 +187,16 @@ while true
  Input.update
 end
 
-# We now get ready for the third transition, and get rid of all the objects created along the way.
-
-Graphics.freeze
-n.dispose
-a.dispose
-b.dispose
-c.dispose
-Graphics.transition(60, "Graphics/Transitions/sweep", 128)
-
-# This final line is for the benefit of 'menu.rb', which is the launcher used to run these examples.
+# This line is for the benefit of 'menu.rb', which is the launcher used to run these examples.
 # 'menu.rb' expects a final freeze to allow it to perform a transition back to the menu.
 # In other RGSS1 programs, this final freeze would be completely irrelevant.
 
 Graphics.freeze
 
+n.dispose
+a.dispose
+b.dispose
+c.dispose
+
 # Running off the end of all scripts quits the game.
 # While in this case this script is actually being loaded by a launcher, if this were run standalone, it would end now.
-# 
