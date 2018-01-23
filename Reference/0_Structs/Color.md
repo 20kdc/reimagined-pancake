@@ -13,7 +13,7 @@ Creates a Color from a given set of values.
 *No Chapter*
 
 
-## function set() -> nil
+## function set(red Float, green Float, blue Float, alpha = 255.0) -> nil
 
 Changes all 4 of this Color's values at the same time.
 
@@ -43,28 +43,28 @@ See {Color.\=\=}.
 
 ## getset red = Float
 
-The red adjustment of the Color. Typically between UNKNOWN and UNKNOWN - UNKNOWN means no change.
+The red of the Color. Between 0 and 255, inclusive.
 
 *No Chapter*
 
 
 ## getset green = Float
 
-The green adjustment of the Color. Typically between UNKNOWN and UNKNOWN - UNKNOWN means no change.
+The green of the Color. Between 0 and 255, inclusive.
 
 *No Chapter*
 
 
 ## getset blue = Float
 
-The blue adjustment of the Color. Typically between UNKNOWN and UNKNOWN - UNKNOWN means no change.
+The blue of the Color. Between 0 and 255, inclusive.
 
 *No Chapter*
 
 
-## getset gray = Float
+## getset alpha = Float
 
-The gray adjustment of the Color. Typically between UNKNOWN and UNKNOWN - UNKNOWN means no change.
+The alpha of the Color. Between 0 and 255, inclusive.
 
 *No Chapter*
 
