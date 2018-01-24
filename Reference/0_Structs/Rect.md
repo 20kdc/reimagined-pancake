@@ -18,14 +18,14 @@ Changes all 4 of this Rect's values at the same time.
 *No Chapter*
 
 
-## function \=\=(other ?) -> Boolean
+## function ==(other ?) -> Boolean
 
 Is this equal to another value (which should be a Rect)?
 
 *No Chapter*
 
 
-## function \=\=\=(other ?) -> Boolean
+## function ===(other ?) -> Boolean
 
 See {Rect.\=\=}.
 

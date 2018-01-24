@@ -24,14 +24,14 @@ Changes all 4 of this Tone's values at the same time.
 *No Chapter*
 
 
-## function \=\=(other ?) -> Boolean
+## function ==(other ?) -> Boolean
 
 Is this equal to another value (which should be a Tone)?
 
 *No Chapter*
 
 
-## function \=\=\=(other ?) -> Boolean
+## function ===(other ?) -> Boolean
 
 See {Tone.\=\=}.
 

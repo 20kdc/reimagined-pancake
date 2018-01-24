@@ -20,14 +20,14 @@ Changes all 4 of this Color's values at the same time.
 *No Chapter*
 
 
-## function \=\=(other ?) -> Boolean
+## function ==(other ?) -> Boolean
 
 Is this equal to another value (which should be a Color)?
 
 *No Chapter*
 
 
-## function \=\=\=(other ?) -> Boolean
+## function ===(other ?) -> Boolean
 
 See {Color.\=\=}.
 

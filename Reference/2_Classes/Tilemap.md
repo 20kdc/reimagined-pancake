@@ -33,7 +33,7 @@ There appears to be a limit in the official RPG Maker XP software of tile IDs be
 
 That said, I only know of this limit from observation of it's output, and thus it may not be reliable.
 
-Regarding the 48 autotiles, each autotile image can be divided into 96x128 animation frames,
+Regarding the 48 autotiles, each autotile image can be divided into either 1 or 4 96x128 animation frames,
  each looking like this:
 
     A | |B
@@ -54,9 +54,7 @@ The mappings from the 48 IDs to their 4 subtile corners are available in [R48's 
 
 Thanks to Ancurio for alerting me to the errors that were in this in pre-release versions, and giving me a reference chart I used to compare MKXP and R48.
 
-Regarding animation, I don't know the exact details of how animation works at this time.
-
-## TODO TODO TODO TODO, is it only 1 or 4 frames, or something more? What's the rate?
+Regarding animation, each animation frame lasts 16 tilemap updates.
 
 ## static function new(viewport = nil) -> Tilemap
 
@@ -138,7 +136,7 @@ The 'camera Y', in pixels.
 
 ## function update() -> nil
 
-Updates flashes.
+Updates flashes and animates autotiles.
 
 *Chapter 3*
 
