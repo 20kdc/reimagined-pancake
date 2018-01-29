@@ -7,7 +7,6 @@
 # It's job is to control the transitions between components in a sane manner.
 # The self-contained examples don't have entry fades, but do have exit fades.
 # These exit fades are kept, and then the transition to the main screen occurs.
-# 
 
 class PancakeExecutive
  attr_accessor :loading
@@ -28,7 +27,7 @@ class PancakeExecutive
  def run(str)
   @loading = true
   Graphics.freeze
-  load "ScriptSource/" + str + ".rb"
+  eval IO.read("ScriptSource/" + str + ".rb")
   @loading = true
  end
 end

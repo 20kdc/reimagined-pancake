@@ -3,3 +3,7 @@ Data/xScripts.rxdata
 reference.html
 all.md
 all.html
+
+*.jar
+*.exe
+*.dll
