@@ -27,14 +27,14 @@ Is this equal to another value (which should be a Rect)?
 
 ## function ===(other ?) -> Boolean
 
-See {Rect.\=\=}.
+See {Rect.==}.
 
 *No Chapter*
 
 
 ## function eql?(other ?) -> Boolean
 
-See {Rect.\=\=}.
+See {Rect.==}.
 
 *No Chapter*
 

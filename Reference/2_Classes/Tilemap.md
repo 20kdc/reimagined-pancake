@@ -27,7 +27,7 @@ It starts out with 8 blocks with 48 tiles in each block.
 
 These are the "null" Autotile layer, and the 7 proper Autotile layers.
 
-Tile ID 384 and onwards is simply an index into the `Graphics/Tilesets/` map. 256 wide, nothing much to see here.
+Tile ID 384 and onwards is simply an index into the `Graphics/Tilesets/` map. 256 pixels wide, nothing much to see here.
 
 There appears to be a limit in the official RPG Maker XP software of tile IDs being limited from 0 to 1631.
 
