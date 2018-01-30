@@ -13,7 +13,8 @@ class PancakeMenu
    "Chapter 2. Introducing the Input module.",
    "Chapter 3. Tilemaps (Plural) - or, how I learned to stop worrying and love the tilemaps.",
    "Chapter 4. Transitions (detailed).",
-   "Chapter 5. Viewports."
+   "Chapter 5. Viewports.",
+   "Chapter 6. A window to another world."
   ]
   @cursor_rect_target = 1
   start_window

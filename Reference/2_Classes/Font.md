@@ -6,7 +6,7 @@ A Font defines how text is rendered, including font family, size, and attributes
 
 Creates a Font object, optionally with a name and size.
 
-*No Chapter*
+*Chapter 6*
 
 
 ## function clone() -> Font
@@ -27,7 +27,7 @@ Does the specified font family exist?
 
 The default font family when none is specified.
 
-*No Chapter*
+*Chapter 6*
 
 
 ## static getset default\_size = Fixnum
