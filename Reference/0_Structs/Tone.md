@@ -33,14 +33,14 @@ Is this equal to another value (which should be a Tone)?
 
 ## function ===(other ?) -> Boolean
 
-See {Tone.\=\=}.
+See {Tone.==}.
 
 *No Chapter*
 
 
 ## function eql?(other ?) -> Boolean
 
-See {Tone.\=\=}.
+See {Tone.==}.
 
 *No Chapter*
 

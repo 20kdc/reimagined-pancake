@@ -29,14 +29,14 @@ Is this equal to another value (which should be a Color)?
 
 ## function ===(other ?) -> Boolean
 
-See {Color.\=\=}.
+See {Color.==}.
 
 *No Chapter*
 
 
 ## function eql?(other ?) -> Boolean
 
-See {Color.\=\=}.
+See {Color.==}.
 
 *No Chapter*
 

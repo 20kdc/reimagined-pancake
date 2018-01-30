@@ -73,7 +73,7 @@ Creates a Tilemap. Critical things to set to prevent crashes on rendering:
 
 The viewport that this tilemap is constrained to.
 
-*Chapter 3*
+*No Chapter*
 
 
 ## getset tileset = Bitmap
@@ -151,3 +151,5 @@ Dispose of this object. The object then becomes unusable and invisible.
 ## function disposed?() -> Boolean
 
 Has this object been disposed?
+
+*No Chapter*

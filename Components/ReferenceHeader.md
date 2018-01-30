@@ -10,3 +10,13 @@ Good luck writing those replacement scripts.
 
 NOTE: Right now this is incomplete!
 
+# Blend Types
+
+There are 4 known blend types supported by RGSS1.
+
+  + -1: Normal, but doesn't modify the destination alpha.
+  + 0: Normal, the default - source Alpha weights an RGB interpolation, then source alpha is added to destination alpha multiplied by inverted source alpha (for some reason).
+  + 1: Addition. Adds RGB \* Alpha of source to destination RGB, and adds Alpha of source to destination.
+  + 2: Subtraction. Subtracts RGB \* Alpha of source from destination RGB, and subtracts alpha of source from destination.
+
+

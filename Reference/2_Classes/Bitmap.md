@@ -153,3 +153,17 @@ Returns the size of a given piece of text drawn with the current font.
 The font used for drawing text.
 
 *No Chapter*
+
+
+## function dispose() -> nil
+
+Dispose of this object. The object then becomes unusable and invisible.
+
+*Chapter 1*
+
+
+## function disposed?() -> Boolean
+
+Has this object been disposed?
+
+*No Chapter*
