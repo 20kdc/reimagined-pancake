@@ -97,6 +97,8 @@ Equivalent to {RPG::Cache.load\_bitmap} with: `("Graphics/Battlers/", name, hue)
 
 Equivalent to {RPG::Cache.load\_bitmap} with: `("Graphics/Animations/", name, hue)`.
 
+Note, however, that {RPG::Sprite} will dispose of these automatically and unexpectedly.
+
 *No Chapter*
 
 
@@ -127,15 +129,3 @@ Equivalent to {RPG::Cache.load\_bitmap} with: `("Graphics/Battlebacks/", name)`.
 
 *No Chapter*
 
-
-## ivar @cache -> Hash: ? -> Bitmap
-
-(Internal implementation detail)
-
-This hash maps the following keys to their bitmaps:
-
- + Strings {RPG::Cache.load\_bitmap}: `path`
- + 2-element arrays {RPG::Cache.load\_bitmap}: `[name, hue]`
- + 3-element arrays {RPG::Cache.tile}: `[name, tile_id, hue]`
-
-*No Chapter*

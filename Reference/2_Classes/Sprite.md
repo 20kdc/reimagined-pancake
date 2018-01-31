@@ -25,23 +25,23 @@ The part of the bitmap to use. Set this to {Bitmap.rect} to display the whole im
 
 ## getset ox = Fixnum
 
-The X origin for rotation. Defaults to 0.
+The X origin for rotation, but also probably moves the sprite left. Defaults to 0.
 
 *No Chapter*
 
 
 ## getset oy = Fixnum
 
-The Y origin for rotation. Defaults to 0.
+The Y origin for rotation, but also probably moves the sprite up. Defaults to 0.
 
-*No Chapter*
+*Chapter 5*
 
 
 ## getset zoom\_x = Float
 
 Zoom X, where 1.0 is unmodified. Defaults to 1.0.
 
-*No Chapter*
+*Chapter 5*
 
 
 ## getset zoom\_y = Float
