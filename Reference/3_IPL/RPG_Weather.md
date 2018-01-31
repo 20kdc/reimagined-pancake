@@ -1,4 +1,4 @@
-# class RPG::Weather
+# class RPG::Weather IPL
 
 This class provides utility functions relating to weather control.
 

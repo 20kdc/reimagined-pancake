@@ -1,4 +1,4 @@
-# class RPG::Sprite < Sprite
+# class RPG::Sprite < Sprite IPL
 
 An extension of Sprite, this contains several utility functions, including animation display.
 
