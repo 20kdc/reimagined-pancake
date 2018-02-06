@@ -4,7 +4,7 @@
 # You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 ##
-# # Chapter 6. A window to another world.
+# # Chapter 6. A Window to another world.
 #
 # Windows are best summarized as "9-patch bitmap scrollable containers".
 #

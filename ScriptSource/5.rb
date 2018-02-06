@@ -8,7 +8,11 @@
 #
 # As previously mentioned, viewports are layering, scrolling and scissoring tools.
 #
-# Here, they will be used for 3 identical instances of a basic rotozoomer.
+# They cannot be nested, so you can only go one layer deep, though it should be possible to emulate nested viewports in theory.
+#
+# Everything within a viewport is layered according to an 'internal Z'.
+#
+# The viewport has one Z with respect to other objects on the screen.
 #
 #  + `class Viewport`
 #    + `Viewport.new(r Rect/x Fixnum, y Fixnum, w Fixnum, h Fixnum) -> Viewport` : Creates a viewport to show in a given place & size on-screen.
@@ -23,23 +27,37 @@
 #    + `v.dispose() -> nil` : Dispose the object - makes it unusable.
 #    + `v.disposed?() -> Boolean` : Has this been disposed yet?
 #
-# Before doing anything, define some decent contents.
+# Here, viewports will be used for 3 identical instances of a basic rotozoomer.
 
 class C5_Rotozoomer
  def initialize(viewport)
+
+# Initialize a 1024x1024 image, and fill it with the icon, as a Plane doesn't have rotation controls.
+
   icon = Bitmap.new("Graphics/Pictures/roto2r")
   @c = Bitmap.new(1024, 1024)
   (0..((@c.width / icon.width) - 1)).each do | x |
    (0..((@c.height / icon.height) - 1)).each do | y |
+# This function blits one Bitmap onto another.
     @c.blt(x * icon.width, y * icon.height, icon, Rect.new(0, 0, icon.width, icon.height))
    end
   end
   icon.dispose()
+
+# Create a Sprite as a fake plane.
+#
+# On MKXP at least, this is clipped properly and handled on the GPU.
+#
+# Your mileage may vary.
+
   @n = Sprite.new(viewport)
   @n.bitmap = @c
   @n.src_rect = Rect.new(0, 0, @c.width, @c.height)
  end
  def update()
+# Basically, just move the sprite around in a circle, zoom it, and rotate it.
+#
+# Nothing special, not like we're playing with atoms here.
   scx = (Math.sin((Graphics.frame_count.to_f / 120.0) * Math::PI) * 128).to_i
   scy = (Math.cos((Graphics.frame_count.to_f / 120.0) * Math::PI) * 128).to_i
   @n.ox = (@c.width / 2) + scx
@@ -57,7 +75,7 @@ class C5_Rotozoomer
 end
 
 # Now that part's over with, define the three viewports.
-
+#
 # v1 is to the top-left, and serves as a reference for v3.
 #
 # v2 is to the top-right, but it's camera position is 0, 0, so it mirrors v1.
@@ -98,7 +116,7 @@ while not Input.trigger?(Input::A)
  Input.update
 end
 
-# And that's the end of that.
+# And that's the end of that - freeze and dispose, as per usual.
 
 Graphics.freeze
 a.dispose
