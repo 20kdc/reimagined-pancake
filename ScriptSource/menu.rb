@@ -60,10 +60,10 @@ class PancakeMenu
  end
  def start_window()
   @window = Window.new()
-  @window.windowskin = Bitmap.new("Graphics/Windowskins/menu")
+  @window.windowskin = Bitmap.new("Graphics/Windowskins/icantbelieveitsnotxp")
   @window.cursor_rect = Rect.new(0, @cursor_rect_target * 18, 640 - 32, 18)
   @window.active = true
-  @window.stretch = false
+  @window.stretch = true
   @window.pause = false
 
   @window.x = 0
