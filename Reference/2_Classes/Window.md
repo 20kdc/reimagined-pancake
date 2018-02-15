@@ -22,7 +22,7 @@ If any boundary of this image exceeds any inner border of the window, the respec
 
 ## getset stretch = Boolean
 
-Stretch the Window's back and cursor squares..
+Stretch the Window's back and cursor squares.
 
 *No Chapter*
 
@@ -36,14 +36,14 @@ The Window's cursor rectangle.
 
 ## getset active = Boolean
 
-Is the Window cursor active?
+Should the Window cursor perform it's usual fade? (Defaults to true.)
 
 *No Chapter*
 
 
 ## getset pause = Boolean
 
-Pauses the Window's animations.
+Displays the "advance game" arrow at the bottom of the Window. This fades in when set to true, but disappears when set to false.
 
 *No Chapter*
 

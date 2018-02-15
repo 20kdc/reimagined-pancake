@@ -35,11 +35,36 @@ n.height = 40
 n.contents = Bitmap.new(n.width - 32, n.height - 32)
 # Fill the Bitmap with some sensible text.
 n.contents.font = Font.new(Font.default_name, 12)
-n.contents.draw_text(0, -1, n.contents.width, n.contents.height, "Arrow keys move, Z to exit. And yes, I know the picture sucks.")
+n.contents.draw_text(0, -1, n.contents.width, n.contents.height, "Arrow keys: Move. Z: Exit. A: Toggle Stretch. S: Toggle Pause. C: Toggle N.Active. X: Toggle N.Cursor.")
 
-# Here, the scrolling is controlled with input, and the Z key quits.
+# The beginning of the usual loop:
 Input.update
 while not Input.trigger?(Input::A)
+# Toggle the 3 major flags.
+ if Input.trigger?(Input::C)
+  n.active = !n.active
+  puts("N.Active toggled:" + n.active.to_s)
+ end
+ if Input.trigger?(Input::X)
+  b.stretch = !b.stretch
+  puts("Stretch toggled." + b.stretch.to_s)
+ end
+ if Input.trigger?(Input::Y)
+  b.pause = !b.pause
+  puts("Pause toggled." + b.pause.to_s)
+ end
+# Note that the cursor appears under the contents, so this is all done on the instructions window.
+ active = n.cursor_rect.width > 0
+ trig_now = Input.trigger?(Input::B)
+ if trig_now
+  active = !active
+ end
+ if active
+  n.cursor_rect = Rect.new(0, 0, 608, 8)
+ else
+  n.cursor_rect = Rect.new(0, 0, 0, 0)
+ end
+# Some simple scrolling logic.
  if Input.press?(Input::LEFT)
   b.ox = b.ox - 8
  end
