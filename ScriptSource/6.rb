@@ -8,7 +8,10 @@
 #
 # Windows are best summarized as "9-patch bitmap scrollable containers".
 #
-# In particular, they have a "contents bitmap", offset controls to scroll it, and scroll arrows.
+# In particular, they have a "contents bitmap", which you can control the scroll of -
+#  they have arrows to show where you can scroll -
+#  they have a graphic to show over the lower arrow, to tell the user to press a button -
+#  and they have a "cursor rectangle", which is used to indicate an area within the window.
 #
 # Firstly, let's get the two images used here.
 
@@ -40,7 +43,13 @@ n.contents.draw_text(0, -1, n.contents.width, n.contents.height, "Arrow keys: Mo
 # The beginning of the usual loop:
 Input.update
 while not Input.trigger?(Input::A)
-# Toggle the 3 major flags.
+# Toggle the 3 major flags:
+#
+# Active, controls if the cursor rectangle should animate.
+#
+# Stretch, controls if the background image should be stretched (as opposed to tiled) under the contents area.
+#
+# Pause, controls the flashing "press a button to continue" prompt at the bottom of the Window.
  if Input.trigger?(Input::C)
   n.active = !n.active
   puts("N.Active toggled:" + n.active.to_s)
