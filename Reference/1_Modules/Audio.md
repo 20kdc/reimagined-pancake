@@ -25,7 +25,7 @@ Stops the current BGM.
 
 ## function bgm\_fade(fade Fixnum) -> nil
 
-Fades out the current BGM over a given amount of frames.
+Fades out the current BGM over a given amount of milliseconds.
 
 *No Chapter*
 
@@ -46,7 +46,7 @@ Stops the current BGS.
 
 ## function bgs\_fade(fade Fixnum) -> nil
 
-Fades out the current BGS over a given amount of frames.
+Fades out the current BGS over a given amount of milliseconds.
 
 *No Chapter*
 
@@ -66,7 +66,7 @@ Stops the current ME.
 
 ## function me\_fade(fade Fixnum) -> nil
 
-Fades out the current ME over a given amount of frames.
+Fades out the current ME over a given amount of milliseconds.
 
 *No Chapter*
 
