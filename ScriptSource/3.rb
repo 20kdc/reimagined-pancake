@@ -87,9 +87,9 @@ c.update
 
 Input.update
 while not Input.trigger?(Input::A)
- a.ox = Graphics.frame_count 
- b.ox = Graphics.frame_count * 4
- c.ox = Graphics.frame_count * 16
+ a.ox = Graphics.frame_count * 2
+ b.ox = Graphics.frame_count * 3
+ c.ox = Graphics.frame_count * 4
  a.update
  b.update
  c.update
