@@ -32,21 +32,21 @@ Changes the weather:
 
 ## getset ox = Fixnum
 
-Camera position used for the weather.
+Camera position used for the weather. Defaults to 0.
 
 *No Chapter*
 
 
 ## getset oy = Fixnum
 
-Camera position used for the weather.
+Camera position used for the weather. Defaults to 0.
 
 *No Chapter*
 
 
 ## getset max = Fixnum
 
-The amount of sprites onscreen (from 0 to 40).
+The amount of sprites onscreen (from 0 to 40). Defaults to 0.
 
 *No Chapter*
 
